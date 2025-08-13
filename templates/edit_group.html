@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Справка НАП - Редактиране на група</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #4a6491;
+            --accent: #3498db;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa, #e4edf9);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: none;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.5rem;
+            padding: 18px 25px;
+            border-radius: 0 !important;
+            font-weight: 600;
+        }
+        
+        .btn-back {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .group-info {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .group-name-input {
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 12px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .group-name-input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+        }
+        
+        .selected-items-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .selected-items-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .selected-items-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .selected-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .selected-item-info h5 {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .selected-item-info p {
+            color: #6c757d;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+        
+        .remove-btn {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .remove-btn:hover {
+            background: rgba(231, 76, 60, 0.2);
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+        
+        .table-header {
+            margin-bottom: 20px;
+        }
+        
+        .table-content {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        th {
+            background-color: var(--secondary);
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+        }
+        
+        tr {
+            background: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e9ecef;
+            color: #212529;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 10px 0;
+        }
+        
+        .page-btn {
+            min-width: 40px;
+            border-radius: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .action-section {
+            background: rgba(74, 100, 145, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .status-badge {
+            background: var(--accent);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/manage_groups" class="btn btn-back">
+            <i class="fas fa-arrow-left me-2"></i>Назад към управление на групи
+        </a>
+        
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-edit me-3"></i>Редактиране на група
+            </div>
+            <div class="card-body">
+                <!-- Group Info -->
+                <div class="group-info">
+                    <input type="text" id="groupName" class="group-name-input" placeholder="Име на групата">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button id="updateGroupBtn" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Запази промените
+                        </button>
+                        <div id="groupUpdateMessage" class="text-success fw-bold"></div>
+                    </div>
+                </div>
+                
+                <!-- Selected Items -->
+                <div class="selected-items-container">
+                    <div class="selected-items-header">
+                        <h5 class="mb-0">Продукти в групата</h5>
+                        <span class="status-badge" id="itemsCount">0 продукта</span>
+                    </div>
+                    <div class="selected-items-content">
+                        <div id="selectedItems">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-box-open"></i>
+                                </div>
+                                <p>Няма продукти в групата</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Section -->
+                <div class="action-section">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Добавяне на продукти</h5>
+                        <div id="selectedCount" class="status-badge">0 избрани</div>
+                    </div>
+                    
+                    <div class="d-flex gap-3">
+                        <div class="flex-grow-1">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchBox" placeholder="Търсене по име, код или доставчик...">
+                                <button class="btn btn-primary" onclick="loadItems(1)">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button id="addToGroupBtn" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>Добави избраните
+                        </button>
+                    </div>
+                    <div id="addItemsMessage" class="mt-3"></div>
+                </div>
+                
+                <!-- Table Section -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h5>Налични продукти</h5>
+                    </div>
+                    <div class="table-content">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width: 40px;">Избор</th>
+                                        <th scope="col">Код</th>
+                                        <th scope="col">Име на продукт</th>
+                                        <th scope="col">Цена за клиент</th>
+                                        <th scope="col">Доставчик</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Зареждане...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="pagination" class="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get group ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const groupId = urlParams.get('group_id') || {{ group_id }};
+        let selectedItems = {};
+        let currentPage = 1;
+        let totalPages = 1;
+        let searchTimeout = null;
+        let groupItems = [];
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGroupInfo();
+            loadGroupItems();
+            loadItems();
+            
+            // Set up event listeners
+            document.getElementById('updateGroupBtn').addEventListener('click', updateGroupName);
+            document.getElementById('addToGroupBtn').addEventListener('click', addItemsToGroup);
+            document.getElementById('searchBox').addEventListener('input', handleSearch);
+            
+            // Add keyboard shortcut for search
+            document.getElementById('searchBox').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loadItems(1);
+                }
+            });
+        });
+        
+        // Load group information
+        function loadGroupInfo() {
+            fetch(`/groups/${groupId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('groupName').value = data.name;
+                })
+                .catch(error => {
+                    console.error('Error loading group info:', error);
+                });
+        }
+        
+        // Load items in the group
+        function loadGroupItems() {
+            fetch(`/groups/${groupId}/items`)
+                .then(response => response.json())
+                .then(itemIds => {
+                    groupItems = itemIds;
+                    document.getElementById('itemsCount').textContent = `${itemIds.length} продукта`;
+                    renderSelectedItems();
+                    
+                    // Pre-select items in the table
+                    itemIds.forEach(id => {
+                        selectedItems[id] = true;
+                    });
+                    // Update selected count
+                    document.getElementById('selectedCount').textContent = `${Object.keys(selectedItems).length} избрани`;
+                })
+                .catch(error => {
+                    console.error('Error loading group items:', error);
+                });
+        }
+        
+        // Render selected items
+        function renderSelectedItems() {
+            const container = document.getElementById('selectedItems');
+            if (groupItems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <p>Няма продукти в групата</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Get item details
+            Promise.all(groupItems.map(id => getItemDetails(id)))
+                .then(items => {
+                    let html = '';
+                    items.forEach(item => {
+                        if (!item) return;
+                        html += `
+                            <div class="selected-item">
+                                <div class="selected-item-info">
+                                    <h5>${item.Item}</h5>
+                                    <p>Код: ${item.Code} | Цена: ${item.ClientPrice} | Доставчик: ${item.Vendor}</p>
+                                </div>
+                                <button class="remove-btn" data-id="${item.id}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                    
+                    // Add remove event listeners
+                    document.querySelectorAll('.remove-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const itemId = this.dataset.id;
+                            removeItemFromGroup(itemId);
+                        });
+                    });
+                });
+        }
+        
+        // Get item details by ID
+        function getItemDetails(itemId) {
+            return fetch(`/search?q=${itemId}&page=1&per_page=1`)
+                .then(response => response.json())
+                .then(data => data.results[0])
+                .catch(error => {
+                    console.error(`Error loading item ${itemId}:`, error);
+                    return null;
+                });
+        }
+        
+        // Remove item from group
+        function removeItemFromGroup(itemId) {
+            fetch(`/groups/${groupId}/items/${itemId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove from local state
+                    groupItems = groupItems.filter(id => id != itemId);
+                    document.getElementById('itemsCount').textContent = `${groupItems.length} продукта`;
+                    delete selectedItems[itemId];
+                    document.getElementById('selectedCount').textContent = `${Object.keys(selectedItems).length} избрани`;
+                    
+                    // Update UI
+                    renderSelectedItems();
+                    
+                    // Uncheck in table if visible
+                    const checkbox = document.querySelector(`.item-checkbox[data-id="${itemId}"]`);
+                    if (checkbox) checkbox.checked = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error removing item:', error);
+            });
+        }
+        
+        // Load items from server
+        function loadItems(page = 1) {
+            const searchQuery = document.getElementById('searchBox').value;
+            currentPage = page;
+            
+            // Show loading indicator
+            const tbody = document.getElementById('itemsTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Зареждане...</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            
+            // Fetch data from server
+            fetch(`/search?q=${encodeURIComponent(searchQuery)}&page=${page}`)
+                .then(response => response.json())
+                .then(data => {
+                    renderTable(data.results);
+                    renderPagination(data);
+                })
+                .catch(error => {
+                    console.error('Error loading items:', error);
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Грешка при зареждане на продуктите</td></tr>';
+                });
+        }
+        
+        // Render table with items
+        function renderTable(items) {
+            const tbody = document.getElementById('itemsTableBody');
+            if (items.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="fas fa-search fa-2x mb-3 text-muted"></i>
+                            <p class="mb-0">Няма намерени продукти</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            items.forEach(item => {
+                const isSelected = selectedItems[item.id] !== undefined;
+                html += `
+                    <tr>
+                        <td>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input item-checkbox" ${isSelected ? 'checked' : ''} data-id="${item.id}">
+                            </div>
+                        </td>
+                        <td>${item.Code}</td>
+                        <td>${item.Item}</td>
+                        <td>${item.ClientPrice}</td>
+                        <td>${item.Vendor}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+            
+            // Update selected count
+            const selectedIds = Object.keys(selectedItems);
+            document.getElementById('selectedCount').textContent = `${selectedIds.length} избрани`;
+            
+            // Add checkbox event listeners
+            document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const itemId = this.dataset.id;
+                    if (this.checked) {
+                        selectedItems[itemId] = true;
+                    } else {
+                        delete selectedItems[itemId];
+                    }
+                    document.getElementById('selectedCount').textContent = `${Object.keys(selectedItems).length} избрани`;
+                });
+            });
+        }
+        
+        // Render pagination controls
+        function renderPagination(data) {
+            const paginationDiv = document.getElementById('pagination');
+            totalPages = data.total_pages;
+            
+            if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // Previous button
+            html += `<button class="btn btn-outline-primary page-btn" onclick="loadItems(${Math.max(1, currentPage - 1)})" ${currentPage === 1 ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>`;
+            
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, startPage + 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="btn ${i === currentPage ? 'btn-primary' : 'btn-outline-primary'} page-btn" onclick="loadItems(${i})">${i}</button>`;
+            }
+            
+            // Next button
+            html += `<button class="btn btn-outline-primary page-btn" onclick="loadItems(${Math.min(totalPages, currentPage + 1)})" ${currentPage === totalPages ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>`;
+            
+            paginationDiv.innerHTML = html;
+        }
+        
+        // Search functionality with debouncing
+        function handleSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadItems(1);
+            }, 300);
+        }
+        
+        // Update group name
+        function updateGroupName() {
+            const newName = document.getElementById('groupName').value.trim();
+            const messageDiv = document.getElementById('groupUpdateMessage');
+            
+            if (!newName) {
+                messageDiv.textContent = 'Името на групата е задължително';
+                messageDiv.className = 'text-danger';
+                return;
+            }
+            
+            // Show saving indicator
+            const originalText = document.getElementById('updateGroupBtn').innerHTML;
+            document.getElementById('updateGroupBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Запазване...';
+            document.getElementById('updateGroupBtn').disabled = true;
+            
+            fetch(`/groups/${groupId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: newName })
+            })
+            .then(response => {
+                if (response.ok) {
+                    messageDiv.textContent = 'Името е обновено успешно!';
+                    messageDiv.className = 'text-success';
+                } else {
+                    return response.json().then(data => Promise.reject(data));
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = error.error || 'Грешка при обновяване';
+                messageDiv.className = 'text-danger';
+            })
+            .finally(() => {
+                document.getElementById('updateGroupBtn').innerHTML = originalText;
+                document.getElementById('updateGroupBtn').disabled = false;
+            });
+        }
+        
+        // Add items to group
+        function addItemsToGroup() {
+            const selectedIds = Object.keys(selectedItems);
+            const messageDiv = document.getElementById('addItemsMessage');
+            
+            if (selectedIds.length === 0) {
+                messageDiv.innerHTML = '<div class="alert alert-danger py-2">Моля, изберете поне един продукт</div>';
+                return;
+            }
+            
+            // Show adding indicator
+            const originalText = document.getElementById('addToGroupBtn').innerHTML;
+            document.getElementById('addToGroupBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Добавяне...';
+            document.getElementById('addToGroupBtn').disabled = true;
+            messageDiv.innerHTML = '';
+            
+            // Send assignments to server
+            let successCount = 0;
+            let errorCount = 0;
+            
+            const processItem = (index) => {
+                if (index >= selectedIds.length) {
+                    // All items processed
+                    document.getElementById('addToGroupBtn').innerHTML = originalText;
+                    document.getElementById('addToGroupBtn').disabled = false;
+                    
+                    const message = `
+                        <div class="alert alert-success py-2">
+                            Успешно добавени ${successCount} продукта.
+                            ${errorCount > 0 ? `${errorCount} продукта вече са в групата.` : ''}
+                        </div>
+                    `;
+                    messageDiv.innerHTML = message;
+                    
+                    // Update UI
+                    loadGroupItems();
+                    
+                    // Clear selection
+                    selectedItems = {};
+                    document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = false);
+                    document.getElementById('selectedCount').textContent = '0 избрани';
+                    return;
+                }
+                
+                const itemId = selectedIds[index];
+                
+                // Only add if not already in group
+                if (!groupItems.includes(parseInt(itemId))) {
+                    fetch('/groups/items', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            group_id: groupId,
+                            item_id: itemId
+                        })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                        processItem(index + 1);
+                    })
+                    .catch(() => {
+                        errorCount++;
+                        processItem(index + 1);
+                    });
+                } else {
+                    errorCount++;
+                    processItem(index + 1);
+                }
+            };
+            
+            processItem(0);
+        }
+    </script>
+</body>
+</html>

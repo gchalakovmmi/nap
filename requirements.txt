@@ -1,0 +1,3 @@
+Flask
+pypxlib
+python-docx
